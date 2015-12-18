@@ -17,13 +17,72 @@ $dark:                            #444 !default;
 
 // The path for our ionicons font files, relative to the built CSS in www/css
 $ionicons-font-path: "../lib/ionic/fonts" !default;
-$background: #68768C;
+$background: #2B718C;
 // Include all of Ionic
 @import "www/lib/ionic/scss/ionic";
 *{
-	font-family: 'Montserrat', sans-serif;
+	font-family: 'Montserrat',"Helvetica Neue", "Roboto", "Segoe UI", sans-serif !important;
 }
+.button{
+	font-weight: bold;
+}
+.item-input{
+	background: transparent;
+	border-radius: 5px;
+	border-color: rgba(255,255,255,.5);
+	::-webkit-input-placeholder {
+	   color: rgba(255,255,255,.6);
+	}
 
+	:-moz-placeholder { /* Firefox 18- */
+	   color: rgba(255,255,255,.6);  
+	}
+
+	::-moz-placeholder {  /* Firefox 19+ */
+	   color: rgba(255,255,255,.6);  
+	}
+
+	:-ms-input-placeholder {  
+	   color: rgba(255,255,255,.6);  
+	}
+	input{
+		color: white;
+	}
+}
+.full{
+	height: 100%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	.content{
+		width: 100%;
+	}
+}
+.box{
+	height: 50%;
+	position: relative;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	border-top: 1px solid rgba(255,255,255,.3);
+	.content{
+		width: 100%;
+		.button{
+			display: block;
+			margin-left: auto;
+			margin-right: auto;
+		}
+	}
+	h1{
+		color: white;
+		text-align: center;
+	}
+	p{
+		color: white;
+		text-align: center;
+	}
+}
+	
 ion-view.pane, ion-view.view{
 	background-color: $background;
 }
