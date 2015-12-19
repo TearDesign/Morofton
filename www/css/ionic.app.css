@@ -9737,6 +9737,15 @@ a.button {
 .button {
   font-weight: bold; }
 
+.bad {
+  background: #ef473a !important; }
+
+.good {
+  background: #33cd5f !important; }
+
+.ok {
+  background: #2CB2CA !important; }
+
 .item-input {
   background: transparent;
   border-radius: 5px;
@@ -9786,12 +9795,14 @@ a.button {
     text-align: center;
     line-height: 20px;
     margin-top: calc(15px); }
-  .nav a.bad {
-    background: #ef473a; }
-  .nav a.good {
-    background: #33cd5f; }
-  .nav a.ok {
-    background: #2CB2CA; }
+
+.statdot {
+  display: inline-block;
+  height: 5px;
+  width: 5px;
+  background: grey;
+  vertical-align: middle;
+  border-radius: 3px; }
 
 .box {
   min-height: 250px;

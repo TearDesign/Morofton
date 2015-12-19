@@ -77,37 +77,44 @@ angular.module('starter.controllers', [])
     })
   }
 
+  var jumping = false;
   $scope.scroll = function(anchor) 
   {
+    jumping = true;
+    $timeout(function(){
+      jumping = false;
+    }, 500)
     $location.hash(anchor);
     var handle = $ionicScrollDelegate.$getByHandle('content');
-    handle.anchorScroll(true);
+    handle.anchorScroll(false);
   };
 
   var lastpos;
   var scrolling = false;
   $scope.hidetop = function(){
-    var outside = $ionicScrollDelegate.$getByHandle('outside');
-    var content = $ionicScrollDelegate.$getByHandle('content');
-    var top = content.getScrollPosition().top;
-    var maxoutsidetop = outside.getScrollView().__maxScrollTop;
-    if(lastpos && top > lastpos){
-      if(outside.getScrollPosition().top < maxoutsidetop && !scrolling){
-        outside.scrollBottom(true);
+    if(!jumping){
+      var outside = $ionicScrollDelegate.$getByHandle('outside');
+      var content = $ionicScrollDelegate.$getByHandle('content');
+      var top = content.getScrollPosition().top;
+      var maxoutsidetop = outside.getScrollView().__maxScrollTop;
+      if(lastpos && top > lastpos){
+        if(outside.getScrollPosition().top < maxoutsidetop && !scrolling){
+          outside.scrollBottom(true);
+        }
+        scrolling = true;
+        $timeout(function(){
+          scrolling = false;
+        }, 1000)
+        
+      } else if(lastpos && top < lastpos){
+        if(outside.getScrollPosition().top != 0){
+          outside.scrollTop(true);
+        }
+        
       }
-      scrolling = true;
-      $timeout(function(){
-        scrolling = false;
-      }, 1000)
-      
-    } else if(lastpos && top < lastpos){
-      if(outside.getScrollPosition().top != 0){
-        outside.scrollTop(true);
-      }
-      
+      lastpos = top;
+      console.log(lastpos);
     }
-    lastpos = top;
-    console.log(lastpos);
   }
 })
 

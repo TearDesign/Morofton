@@ -22,9 +22,9 @@
     <div class="content">
       <h1>{{seed.get('title')}}</h1>
       <p ng-if="seed.get('last')">last time: {{seed.get('last') | date: 'dd MMM yyyy'}}</p>
-      <p ng-if="seed.get('last')"><strong>{{difference(seed.get('last'))}} ago</strong></p>
-      <p ng-if="seed.get('last') == undefined">You haven't done it yet</p>
-      <p ng-if="seed.get('last') == undefined"><strong>created {{difference(seed.createdAt)}} ago</strong></p>
+      <p ng-if="seed.get('last')"><strong><span class="statdot" ng-class="status(seed)"></span> {{difference(seed.get('last'))}} ago</strong></p>
+      <p ng-if="seed.get('last') == undefined"> You haven't done it yet</p>
+      <p ng-if="seed.get('last') == undefined"><strong><span class="statdot" ng-class="status(seed)"></span> created {{difference(seed.createdAt)}} ago</strong></p>
       <button ng-click="didIt(seed)" class="button button-balanced">I did it!</button>
     </div>
   </div>

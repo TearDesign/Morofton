@@ -30,6 +30,17 @@ $new: rgba(211, 211, 211, 0.43);
 .button{
 	font-weight: bold;
 }
+
+.bad{
+	background: $assertive !important;
+}
+.good{
+	background: $balanced !important;
+}
+
+.ok{
+	background: $calm !important;
+}
 .item-input{
 	background: transparent;
 	border-radius: 5px;
@@ -90,17 +101,15 @@ $new: rgba(211, 211, 211, 0.43);
 		line-height: 20px;
 		margin-top: calc(15px)
 	}
-	a.bad{
-		background: $assertive;
-	}
-	a.good{
-		background: $balanced;
-	}
 
-	a.ok{
-		background: $calm;
-	}
-
+}
+.statdot{
+	display: inline-block;
+	height: 5px;
+	width: 5px;
+	background: grey;
+	vertical-align: middle;
+	border-radius: 3px;
 }
 .box{
 	// height: 50%;
