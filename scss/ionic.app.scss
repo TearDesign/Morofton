@@ -18,6 +18,10 @@ $dark:                            #444 !default;
 // The path for our ionicons font files, relative to the built CSS in www/css
 $ionicons-font-path: "../lib/ionic/fonts" !default;
 $background: #2B718C;
+$scroll: #2D5465;
+$border: rgba(255,255,255,.3);
+$navheight: 50px;
+$new: rgba(211, 211, 211, 0.43);
 // Include all of Ionic
 @import "www/lib/ionic/scss/ionic";
 *{
@@ -58,13 +62,54 @@ $background: #2B718C;
 		width: 100%;
 	}
 }
+.scrollcontent{
+	height: calc(100% - 50px);
+	background: $scroll;
+	// -webkit-box-shadow: inset 0px 8px 10px -5px rgba(0,0,0,0.5);
+	// -moz-box-shadow: inset 0px 8px 10px -5px rgba(0,0,0,0.5);
+	// box-shadow: inset 0px 8px 10px -5px rgba(0,0,0,0.5);
+}
+.nav{
+	height: $navheight;
+	background: $scroll;
+	padding-left: 5px;
+	white-space: nowrap;
+	box-shadow: 0 0 10px 0 rgba(0,0,0,0.5);
+    position: relative;
+    z-index: 1;
+	a{
+		color: white;
+		text-decoration: none;
+		margin:0 5px;
+		display: inline-block;
+		width: 20px;
+		height: 20px;
+		background: rgba(211, 211, 211, 0.43);
+		border-radius: 10px;
+		text-align: center;
+		line-height: 20px;
+		margin-top: calc(15px)
+	}
+	a.bad{
+		background: $assertive;
+	}
+	a.good{
+		background: $balanced;
+	}
+
+	a.ok{
+		background: $calm;
+	}
+
+}
 .box{
-	height: 50%;
+	// height: 50%;
+	min-height: 250px;
 	position: relative;
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	border-top: 1px solid rgba(255,255,255,.3);
+	border-bottom: 1px solid $border;
 	.content{
 		width: 100%;
 		.button{

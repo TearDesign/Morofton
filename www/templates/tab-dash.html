@@ -1,5 +1,9 @@
 <ion-view view-title="Morofton">
-  <ion-content>
+<div class="bar bar-subheader">
+  <h2 class="title">Sub Header</h2>
+</div>
+
+  <ion-content delegate-handle="outside">
 
 <!-- <ion-slides options="options" slider="slider"> -->
   <div class="padding" ng-class="{full: seeds.length < 1}">
@@ -10,15 +14,21 @@
       <button ng-if="$root.new.length >= 3 || seeds.length < 1" ng-click="addNew()" class="button button-block icon-right ion-ios-plus-outline button-balanced" ng-disabled="$root.new.length < 3 || adding">Add New</button>
     </div>
   </div>
-  <div class="box padding" ng-repeat="seed in seeds">
+  <div class="nav">
+    <a ng-click="scroll(seed.id)" ng-repeat="seed in seeds" ng-class="status(seed)">{{seed.get('title')[0]}}</a>
+  </div>
+  <ion-scroll delegate-handle="content" class="scrollcontent" on-scroll="hidetop()">
+  <div class="box padding" ng-repeat="seed in seeds" id="{{seed.id}}">
     <div class="content">
       <h1>{{seed.get('title')}}</h1>
       <p ng-if="seed.get('last')">last time: {{seed.get('last') | date: 'dd MMM yyyy'}}</p>
       <p ng-if="seed.get('last')"><strong>{{difference(seed.get('last'))}} ago</strong></p>
       <p ng-if="seed.get('last') == undefined">You haven't done it yet</p>
+      <p ng-if="seed.get('last') == undefined"><strong>created {{difference(seed.createdAt)}} ago</strong></p>
       <button ng-click="didIt(seed)" class="button button-balanced">I did it!</button>
     </div>
   </div>
+  </ion-scroll>
 <!-- </ion-slides> -->
   </ion-content>
 </ion-view>

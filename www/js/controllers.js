@@ -1,9 +1,10 @@
 angular.module('starter.controllers', [])
 
-.controller('DashCtrl', function($scope, $rootScope) {
+.controller('DashCtrl', function($scope, $rootScope, $location, $anchorScroll, $timeout, $ionicScrollDelegate) {
   var Seed = Parse.Object.extend('Seed');
   var Record = Parse.Object.extend('Record');
   var seedQuery = new Parse.Query(Seed);
+  $scope.scrolling = false;
   $scope.seeds = [];
   seedQuery.find({
     success: function(result){
@@ -25,6 +26,20 @@ angular.module('starter.controllers', [])
     }
     
     return msg;
+  }
+
+  $scope.status = function(seed){
+    var then = seed.get('last');
+      console.log(now - then);
+    if(then == undefined){
+      return 'new';
+    }else if((now - then) <= 86400000){
+      return 'good';
+    } else if ((now - then) <= (86400000 * 3)){
+      return 'ok';
+    } else {
+      return 'bad';
+    }
   }
 
   $scope.addNew = function(){
@@ -60,6 +75,39 @@ angular.module('starter.controllers', [])
         seed = result;
       }
     })
+  }
+
+  $scope.scroll = function(anchor) 
+  {
+    $location.hash(anchor);
+    var handle = $ionicScrollDelegate.$getByHandle('content');
+    handle.anchorScroll(true);
+  };
+
+  var lastpos;
+  var scrolling = false;
+  $scope.hidetop = function(){
+    var outside = $ionicScrollDelegate.$getByHandle('outside');
+    var content = $ionicScrollDelegate.$getByHandle('content');
+    var top = content.getScrollPosition().top;
+    var maxoutsidetop = outside.getScrollView().__maxScrollTop;
+    if(lastpos && top > lastpos){
+      if(outside.getScrollPosition().top < maxoutsidetop && !scrolling){
+        outside.scrollBottom(true);
+      }
+      scrolling = true;
+      $timeout(function(){
+        scrolling = false;
+      }, 1000)
+      
+    } else if(lastpos && top < lastpos){
+      if(outside.getScrollPosition().top != 0){
+        outside.scrollTop(true);
+      }
+      
+    }
+    lastpos = top;
+    console.log(lastpos);
   }
 })
 
