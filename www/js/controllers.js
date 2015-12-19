@@ -32,7 +32,15 @@ angular.module('starter.controllers', [])
     var then = seed.get('last');
       console.log(now - then);
     if(then == undefined){
-      return 'new';
+      var created = seed.createdAt;
+      if((now - created) <= 86400000){
+        return 'new';
+      } else if ((now - created) <= (86400000 * 3)){
+        return 'ok';
+      } else {
+        return 'bad';
+      }
+      
     }else if((now - then) <= 86400000){
       return 'good';
     } else if ((now - then) <= (86400000 * 3)){
