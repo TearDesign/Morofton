@@ -9738,12 +9738,15 @@ a.button {
   font-weight: bold; }
 
 .bad {
+  background: #ffc900 !important; }
+
+.dead {
   background: #ef473a !important; }
 
 .good {
   background: #33cd5f !important; }
 
-.ok {
+.new {
   background: #2CB2CA !important; }
 
 .item-input {

@@ -32,13 +32,16 @@ $new: rgba(211, 211, 211, 0.43);
 }
 
 .bad{
+	background: $energized !important;
+}
+.dead{
 	background: $assertive !important;
 }
 .good{
 	background: $balanced !important;
 }
 
-.ok{
+.new{
 	background: $calm !important;
 }
 .item-input{
