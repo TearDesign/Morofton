@@ -9,7 +9,7 @@ angular.module('starter.controllers', [])
   var seedQuery = new Parse.Query(Seed);
   $scope.scrolling = false;
   $scope.seeds = [];
-  console.log($scope.seeds);
+  // console.log($scope.seeds);
   seedQuery.find({
     success: function(result){
       $scope.seeds = result;
@@ -39,7 +39,7 @@ angular.module('starter.controllers', [])
 
   $scope.status = function(seed){
     var then = seed.get('last');
-      console.log(now - then);
+      // console.log(now - then);
     if(then == undefined){
       var created = seed.createdAt;
       if((now - created) <= 86400000){
@@ -70,8 +70,8 @@ angular.module('starter.controllers', [])
         $rootScope.new = '';
         $scope.adding = false;
         $scope.$apply();
-        console.log(result);
-        console.log($scope.seeds);
+        // console.log(result);
+        // console.log($scope.seeds);
       },
       error: function(result, error){
         $scope.adding = false;
