@@ -1,16 +1,24 @@
 angular.module('starter.controllers', [])
 
-.controller('DashCtrl', function($scope, $rootScope, $location, $anchorScroll, $timeout, $ionicScrollDelegate) {
+.controller('DashCtrl', function($scope, $rootScope, $location, $anchorScroll, $timeout, $ionicScrollDelegate, $ionicLoading) {
+  $ionicLoading.show({
+    template: 'Loading...'
+  });
   var Seed = Parse.Object.extend('Seed');
   var Record = Parse.Object.extend('Record');
   var seedQuery = new Parse.Query(Seed);
   $scope.scrolling = false;
-  $scope.seeds = localStorage.seeds_cache || [];
+  $scope.seeds = [];
+  console.log($scope.seeds);
   seedQuery.find({
     success: function(result){
-      localStorage.setItem('seeds_cache', result);
       $scope.seeds = result;
       $scope.$apply();
+      $ionicLoading.hide()
+    },
+    error: function(){      
+      $ionicLoading.hide()
+
     }
   })
   var now = new Date();
