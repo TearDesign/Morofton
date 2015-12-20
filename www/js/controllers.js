@@ -41,9 +41,9 @@ angular.module('starter.controllers', [])
         return 'bad';
       }
       
-    }else if((now - then) <= 86400000){
+    }else if((now - then) <= (86400000 * 2)){
       return 'good';
-    } else if ((now - then) <= (86400000 * 3)){
+    } else if ((now - then) <= (86400000 * 5)){
       return 'ok';
     } else {
       return 'bad';
@@ -120,9 +120,9 @@ angular.module('starter.controllers', [])
         }
         
       }
-      lastpos = top;
-      console.log(lastpos);
     }
+    lastpos = top;
+    // console.log(lastpos);
   }
 })
 
