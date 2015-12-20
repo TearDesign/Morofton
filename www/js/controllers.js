@@ -5,9 +5,10 @@ angular.module('starter.controllers', [])
   var Record = Parse.Object.extend('Record');
   var seedQuery = new Parse.Query(Seed);
   $scope.scrolling = false;
-  $scope.seeds = [];
+  $scope.seeds = localStorage.seeds_cache || [];
   seedQuery.find({
     success: function(result){
+      localStorage.setItem('seeds_cache', result);
       $scope.seeds = result;
       $scope.$apply();
     }
