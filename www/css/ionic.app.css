@@ -9782,10 +9782,12 @@ a.button {
   height: 50px;
   background: #2D5465;
   padding-left: 5px;
+  padding-right: 5px;
   white-space: nowrap;
   box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.5);
   position: relative;
-  z-index: 1; }
+  z-index: 1;
+  overflow: auto; }
   .nav a {
     color: white;
     text-decoration: none;
