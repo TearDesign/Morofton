@@ -8,11 +8,17 @@ angular.module('starter.controllers', [])
   var Record = Parse.Object.extend('Record');
   var seedQuery = new Parse.Query(Seed);
   $scope.scrolling = false;
-  $scope.seeds = [];
+  // $scope.seeds = [];
+  $scope.seeds = JSON.parse(window.localStorage['seeds']);
   // console.log($scope.seeds);
   seedQuery.find({
     success: function(result){
-      $scope.seeds = result;
+      var tempseeds = [];
+      for (var i in result){
+        tempseeds.push({'id': result[i].id, 'title': result[i].get('title'), 'last': result[i].get('last'), 'createdAt': result[i].createdAt});
+      }
+      window.localStorage['seeds'] = JSON.stringify(tempseeds);
+      $scope.seeds = tempseeds;
       $scope.$apply();
       $ionicLoading.hide()
     },
@@ -21,16 +27,19 @@ angular.module('starter.controllers', [])
 
     }
   })
-  var now = new Date();
+  $scope.now = new Date();
   $rootScope.new = '';
   $scope.adding = false;
 
+  $timeout(function(){
+      $scope.now = new Date();
+  }, 1000);
   $scope.difference = function(then){
-    if (now - then >= 86400000){
-      var diff = Math.round((now - then)/86400000);
+    if ($scope.now - then >= 86400000){
+      var diff = Math.round(($scope.now - then)/86400000);
       var msg = diff + ' days';
     } else {
-      var diff = Math.round((now-then)/3600000);
+      var diff = Math.round(($scope.now-then)/3600000);
       var msg = diff + ' hours';
     }
     
@@ -38,21 +47,21 @@ angular.module('starter.controllers', [])
   }
 
   $scope.status = function(seed){
-    var then = seed.get('last');
+    var then = seed.last;
       // console.log(now - then);
     if(then == undefined){
       var created = seed.createdAt;
-      if((now - created) <= 86400000){
+      if(($scope.now - created) <= 86400000){
         return 'new';
-      } else if ((now - created) <= (86400000 * 3)){
+      } else if (($scope.now - created) <= (86400000 * 5)){
         return 'ok';
       } else {
         return 'bad';
       }
       
-    }else if((now - then) <= (86400000 * 2)){
+    }else if(($scope.now - then) <= (86400000 * 2)){
       return 'good';
-    } else if ((now - then) <= (86400000 * 5)){
+    } else if (($scope.now - then) <= (86400000 * 5)){
       return 'ok';
     } else {
       return 'bad';
@@ -81,15 +90,21 @@ angular.module('starter.controllers', [])
     // console.log('adding:' + $rootScope.new);
   }
 
-  $scope.didIt = function(seed){
+  $scope.didIt = function(formattedseed){
     var now = new Date();
     var record = new Record();
+    var seed = new Seed;
+    seed.id = formattedseed.id;
     record.set('seed', seed);
     record.save();
     seed.set('last', now);
     seed.save({
       success: function(result){
-        seed = result;
+        formattedseed.last = result.get('last');
+        $scope.$apply();
+      },
+      error: function(result, error){
+        console.log(error.message);
       }
     })
   }
