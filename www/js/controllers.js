@@ -1,9 +1,10 @@
 angular.module('starter.controllers', [])
 
 .controller('DashCtrl', function($scope, $rootScope, $location, $anchorScroll, $timeout, $ionicScrollDelegate, $ionicLoading) {
-  $ionicLoading.show({
-    template: 'Loading...'
-  });
+  // $ionicLoading.show({
+  //   template: 'Loading...'
+  // });
+  $scope.loading = false;
   var Seed = Parse.Object.extend('Seed');
   var Record = Parse.Object.extend('Record');
   var seedQuery = new Parse.Query(Seed);
@@ -16,23 +17,31 @@ angular.module('starter.controllers', [])
   }
   
   // console.log($scope.seeds);
-  seedQuery.find({
-    success: function(result){
-      var tempseeds = [];
-      for (var i in result){
-        tempseeds.push({'id': result[i].id, 'title': result[i].get('title'), 'last': result[i].get('last'), 'createdAt': result[i].createdAt});
-      }
-      window.localStorage['seeds'] = JSON.stringify(tempseeds);
-      $scope.seeds = tempseeds;
-      $scope.$apply();
-      $ionicLoading.hide()
-    },
-    error: function(result, error){ 
-      console.log(error.message);     
-      $ionicLoading.hide()
+  $scope.refresh = function(){
+    $scope.loading = true;
+    seedQuery.find({
+      success: function(result){
+        var tempseeds = [];
+        for (var i in result){
+          tempseeds.push({'id': result[i].id, 'title': result[i].get('title'), 'last': result[i].get('last'), 'createdAt': result[i].createdAt});
+        }
+        window.localStorage['seeds'] = JSON.stringify(tempseeds);
+        $scope.seeds = tempseeds;
+        $scope.$apply();
+        // $ionicLoading.hide()
+        $scope.loading = false;
+      },
+      error: function(result, error){ 
+        console.log(error.message);     
+        // $ionicLoading.hide()
+        $scope.loading = false;
 
-    }
-  })
+      }
+    })
+  }
+
+  $scope.refresh();
+    
   $scope.now = new Date();
   $rootScope.new = '';
   $scope.adding = false;

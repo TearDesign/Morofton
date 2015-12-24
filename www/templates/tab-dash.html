@@ -1,5 +1,7 @@
 <ion-view view-title="Morofton">
-
+  <ion-nav-buttons side="secondary">
+      <button class="button" ng-click="refresh()" ng-disabled="loading"><i class="icon ion-cloud" ng-show="!loading"></i><ion-spinner ng-show="loading"></ion-spinner></button>
+  </ion-nav-buttons>
   <ion-content delegate-handle="outside">
 
 <!-- <ion-slides options="options" slider="slider"> -->
