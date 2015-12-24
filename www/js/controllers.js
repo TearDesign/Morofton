@@ -9,7 +9,12 @@ angular.module('starter.controllers', [])
   var seedQuery = new Parse.Query(Seed);
   $scope.scrolling = false;
   // $scope.seeds = [];
-  $scope.seeds = JSON.parse(window.localStorage['seeds']);
+  if(window.localStorage['seeds']){
+    $scope.seeds = JSON.parse(window.localStorage['seeds']);
+  } else {
+    $scope.seeds = [];
+  }
+  
   // console.log($scope.seeds);
   seedQuery.find({
     success: function(result){
@@ -22,7 +27,8 @@ angular.module('starter.controllers', [])
       $scope.$apply();
       $ionicLoading.hide()
     },
-    error: function(){      
+    error: function(result, error){ 
+      console.log(error.message);     
       $ionicLoading.hide()
 
     }
@@ -75,7 +81,7 @@ angular.module('starter.controllers', [])
     seed.set('title', $rootScope.new);
     seed.save({
       success: function(result){
-        $scope.seeds.unshift(result);
+        $scope.seeds.unshift({'id': result.id, 'title': result.get('title'), 'last': result.get('last'), 'createdAt': result.createdAt});
         $rootScope.new = '';
         $scope.adding = false;
         $scope.$apply();
