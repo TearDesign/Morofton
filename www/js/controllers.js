@@ -41,6 +41,9 @@ angular.module('starter.controllers', [])
       $scope.now = new Date();
   }, 1000);
   $scope.difference = function(then){
+    if(typeof then == 'string'){
+      then = Date.parse(then);
+    }
     if ($scope.now - then >= 86400000){
       var diff = Math.round(($scope.now - then)/86400000);
       var msg = diff + ' days';
@@ -57,6 +60,9 @@ angular.module('starter.controllers', [])
       // console.log(now - then);
     if(then == undefined){
       var created = seed.createdAt;
+      if(typeof created == 'string'){
+        created = Date.parse(created);
+      }
       if(($scope.now - created) <= 86400000){
         return 'new';
       } else if (($scope.now - created) <= (86400000 * 5)){
@@ -65,12 +71,17 @@ angular.module('starter.controllers', [])
         return 'bad';
       }
       
-    }else if(($scope.now - then) <= (86400000 * 2)){
-      return 'good';
-    } else if (($scope.now - then) <= (86400000 * 5)){
-      return 'ok';
     } else {
-      return 'bad';
+      if(typeof then == 'string'){
+        then = Date.parse(then);
+      }
+      if(($scope.now - then) <= (86400000 * 2)){
+        return 'good';
+      } else if (($scope.now - then) <= (86400000 * 5)){
+        return 'ok';
+      } else {
+        return 'bad';
+      }
     }
   }
 
