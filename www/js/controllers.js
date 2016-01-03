@@ -58,7 +58,7 @@ angular.module('starter.controllers', [])
         newSeeds.splice(newSeeds.indexOf(seed), 1);
       }
       localSave();
-      $scope.$apply();
+      // $scope.$apply();
       if($rootScope.currentUser){
         var killseed = new Seed();
        killseed.id = seed.id;
@@ -78,41 +78,62 @@ angular.module('starter.controllers', [])
  $scope.login = function(){
   var user = new Parse.User();
   $scope.data = {};
-
+  var exists = true;
+  $scope.checkaccount = function(){
+    if($scope.data.email){
+      var userquery = new Parse.Query('User');
+      userquery.equalTo('username', $scope.data.email);
+      userquery.find({
+        success: function(result){
+          exists = true;
+        },
+        error: function(result, error){
+          exists = false;
+        }
+      })
+    }
+  }
   // An elaborate, custom popup
   var myPopup = $ionicPopup.show({
-    template: '<label class="item item-input" style="margin-bottom: 5px"><input type="email" placeholder="Email" ng-model="data.email"></label><label class="item item-input"><input type="password" placeholder="Password" ng-model="data.pwd"></label>',
+    template: '<label class="item item-input" style="margin-bottom: 5px"><input type="email" placeholder="Email" ng-model="data.email" ng-blur="checkaccount()"></label><label class="item item-input"><input type="password" placeholder="Password" ng-model="data.pwd"></label>',
     title: 'Log in to sync',
     scope: $scope,
     buttons: [
       { text: 'Later' },
       {
-        text: '<b>Register</b>',
+        text: '<b>Login</b>',
         type: 'button-calm',
         onTap: function(e) {
           if (!$scope.data.email || !$scope.data.pwd) {
             //don't allow the user to close unless he enters wifi password
             e.preventDefault();
           } else {
-            user.set('username', $scope.data.email);
-            user.set('email', $scope.data.email);
-            user.set('password', $scope.data.pwd);
-            user.signUp(null, {
-              success: function(user){
-                $rootScope.currentUser = user;
-                $rootScope.refresh();
-              }, error: function(user, error){
-                alert("Error: "+ error.code + " " + error.message);
-              }
-            })
+            if(!exists){
+              user.set('username', $scope.data.email);
+              user.set('email', $scope.data.email);
+              user.set('password', $scope.data.pwd);
+              user.signUp(null, {
+                success: function(user){
+                  $rootScope.currentUser = user;
+                  $scope.refresh();
+                }, error: function(user, error){
+                  alert("Error: "+ error.code + " " + error.message);
+                }
+              })
+            } else {
+              Parse.User.logIn($scope.data.email, $scope.data.pwd, {
+                success: function(user){
+                  $rootScope.currentUser = user;
+                  $scope.refresh();
+                }, error: function(user, error){
+                  alert(error.message);
+                }
+              })
+            }
           }
         }
       }
     ]
-  });
-
-  myPopup.then(function(res) {
-    console.log('Tapped!', res);
   });
 
  }
@@ -140,6 +161,7 @@ angular.module('starter.controllers', [])
     var uploaded_r = 0;
     // var uploaded_u = 0;
     if(newSeeds.length >= 1 || newRecords.length >= 1){
+      console.log(newSeeds.length + ' new seeds');
       //upload the new seeds created
       for (var i in newSeeds){
         if(typeof newSeeds[i].createdAt == 'string'){
@@ -168,24 +190,27 @@ angular.module('starter.controllers', [])
       }
       //upload new records and update seeds' lasts, need to go before seeds cus it uses legacy ids
       for (var j in newRecords){
-        if(typeof newRecords[i].date == 'string'){
-          var last = Date.parse(newRecords[i].date);
+        console.log(newRecords.length + ' new records');
+        if(typeof newRecords[j].date == 'string'){
+          var last = Date.parse(newRecords[j].date);
         } else {
-          var last = newRecords[i].date;
+          var last = newRecords[j].date;
         }
         var n_update = new Seed();
         var n_record = new Record();
         //upload new records
         n_record.set('seed', newRecords[j].seed);
-        n_record.set('date', last);
+        // n_record.set('date', last);
         n_record.save({
           success: function(result){
             uploaded_r++;
             if (uploaded_r >= newRecords.length){
               newRecords = [];
               localSave();
-              download();
             }
+          },
+          error: function(result, error){
+            console.log(error.message);
           }
         })
         //update last time of existing seeds if server side is newer, doesn't work if not uploaded seed
@@ -194,7 +219,16 @@ angular.module('starter.controllers', [])
         legacyQuery.equalTo('legacy_id', newRecords[j].seed);
         idQuery.get(newRecords[j].seed, {
           success: function(result){
+            console.log(result.get('last'));
             n_update = result;
+            if(n_update.get('last') == undefined || n_update.get('last') < last){
+              n_update.set('last', last);
+              n_update.save({
+                success: function(success){
+                  download();
+                }
+              }); 
+            }
           },
           error: function(result, error){
             console.log(error.message);
@@ -207,11 +241,7 @@ angular.module('starter.controllers', [])
               }
             })
           }
-        })
-        if(n_update.get('last') < last){
-          n_update.set('last', last);
-          n_update.save(); 
-        }
+        });
       }
     } else {
       download();
@@ -365,7 +395,7 @@ angular.module('starter.controllers', [])
     records.push({'seed': formattedseed.id, 'date': now});
     localSave();
     // newUpdates.push({'seed': seed.id, 'date': now});
-    $scope.$apply();
+    // $scope.$apply();
     if($rootScope.currentUser){
       $scope.refresh();
     }
