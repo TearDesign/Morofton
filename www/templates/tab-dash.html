@@ -7,26 +7,34 @@
 <!-- <ion-slides options="options" slider="slider"> -->
   <div class="padding" ng-class="{full: seeds.length < 1}">
     <div class="content">
-      <label class="item item-input">
+      <label class="item item-input addnew">
         <input type="text" ng-model="$root.new" placeholder="What do you want to do more often?">
       </label>
       <button ng-if="$root.new.length >= 3 || seeds.length < 1" ng-click="addNew()" class="button button-block icon-right ion-ios-plus-outline button-balanced" ng-disabled="$root.new.length < 3 || adding">Add New</button>
     </div>
   </div>
-  <div class="nav">
+  <div class="nav" ng-if="seeds.length > 0">
     <a ng-click="scroll(seed.id)" ng-repeat="seed in seeds" ng-class="status(seed)">{{seed.title[0]}}</a>
   </div>
-  <ion-scroll delegate-handle="content" class="scrollcontent" on-scroll="hidetop()">
-  <div class="box padding" ng-repeat="seed in seeds track by $index" id="{{seed.id}}">
-    <div class="content">
-      <h1>{{seed.title}}</h1>
-      <!-- <p ng-if="seed.last">last time: {{seed.last | date: 'dd MMM yyyy'}}</p> -->
-      <p ng-if="seed.last"><strong><span class="statdot" ng-class="status(seed)"></span> {{difference(seed.last)}} ago</strong></p>
-      <!-- <p ng-if="seed.last == undefined"> You haven't done it yet</p> -->
-      <p ng-if="seed.last == undefined"><strong><span class="statdot" ng-class="status(seed)"></span> created {{difference(seed.createdAt)}} ago</strong></p>
-      <button ng-click="didIt(seed)" class="button button-balanced" ng-disabled="now - seed.last <= 43200000">I did it!</button>
-    </div>
-  </div>
+  <ion-scroll delegate-handle="content" class="scrollcontent" on-scroll="hidetop()" ng-if="seeds.length > 0">
+  <ion-list>
+    <ion-item ng-repeat="seed in seeds track by $index" id="{{seed.id}}" class="seed">
+      <div class="box padding">
+        <div class="content">
+          <h1>{{seed.title}}</h1>
+          <!-- <p ng-if="seed.last">last time: {{seed.last | date: 'dd MMM yyyy'}}</p> -->
+          <p ng-if="seed.last"><strong><span class="statdot" ng-class="status(seed)"></span> {{difference(seed.last)}} ago</strong></p>
+          <!-- <p ng-if="seed.last == undefined"> You haven't done it yet</p> -->
+          <p ng-if="seed.last == undefined"><strong><span class="statdot" ng-class="status(seed)"></span> created {{difference(seed.createdAt)}} ago</strong></p>
+          <button ng-click="didIt(seed)" class="button button-balanced" ng-disabled="checkDisable(seed.last)">I did it!</button>
+        </div>
+      </div>
+      <ion-option-button class="button-assertive padding"
+                       ng-click="kill(seed)">
+        <i class="icon ion-bonfire"></i> Kill
+      </ion-option-button>
+    </ion-item>
+  </ion-list>
   </ion-scroll>
 <!-- </ion-slides> -->
   </ion-content>

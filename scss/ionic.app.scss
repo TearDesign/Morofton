@@ -44,6 +44,12 @@ $new: rgba(211, 211, 211, 0.43);
 .new{
 	background: $calm !important;
 }
+.popup{
+	.popup-body{
+		background: $scroll;
+		color: white;
+	}
+}
 .item-input{
 	background: transparent;
 	border-radius: 5px;
@@ -116,32 +122,51 @@ $new: rgba(211, 211, 211, 0.43);
 	vertical-align: middle;
 	border-radius: 3px;
 }
-.box{
-	// height: 50%;
-	min-height: 250px;
-	position: relative;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	border-bottom: 1px solid $border;
-	.content{
-		width: 100%;
-		.button{
-			display: block;
-			margin-left: auto;
-			margin-right: auto;
+.item{
+	border-color: $border !important;
+	ion-option-button{
+		i{
+			padding-right: 5px;
 		}
 	}
-	h1{
-		color: white;
-		text-align: center;
-		margin-bottom: 0;
-	}
-	p{
-		color: white;
-		text-align: center;
-	}
 }
+.seed{
+	background: $scroll;
+	.item-content{
+		background: $scroll;
+		padding: 16px;
+		.box{
+			// height: 50%;
+			background: transparent;
+			min-height: 200px;
+			position: relative;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			// border-bottom: 1px solid $border;
+			.content{
+				width: 100%;
+				.button{
+					display: block;
+					margin-left: auto;
+					margin-right: auto;
+				}
+			}
+			h1{
+				color: white;
+				text-align: center;
+				margin-bottom: 0;
+				font-size: 25px;
+			}
+			p{
+				color: white;
+				text-align: center;
+				margin-bottom: 10px;
+				color: rgba(255,255,255,.6)
+			}
+		}
+	}
+}	
 	
 ion-view.pane, ion-view.view{
 	background-color: $background;

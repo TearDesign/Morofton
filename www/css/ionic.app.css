@@ -9749,6 +9749,10 @@ a.button {
 .new {
   background: #2CB2CA !important; }
 
+.popup .popup-body {
+  background: #2D5465;
+  color: white; }
+
 .item-input {
   background: transparent;
   border-radius: 5px;
@@ -9809,26 +9813,39 @@ a.button {
   vertical-align: middle;
   border-radius: 3px; }
 
-.box {
-  min-height: 250px;
-  position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.3); }
-  .box .content {
-    width: 100%; }
-    .box .content .button {
-      display: block;
-      margin-left: auto;
-      margin-right: auto; }
-  .box h1 {
-    color: white;
-    text-align: center;
-    margin-bottom: 0; }
-  .box p {
-    color: white;
-    text-align: center; }
+.item {
+  border-color: rgba(255, 255, 255, 0.3) !important; }
+  .item ion-option-button i {
+    padding-right: 5px; }
+
+.seed {
+  background: #2D5465; }
+  .seed .item-content {
+    background: #2D5465;
+    padding: 16px; }
+    .seed .item-content .box {
+      background: transparent;
+      min-height: 200px;
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center; }
+      .seed .item-content .box .content {
+        width: 100%; }
+        .seed .item-content .box .content .button {
+          display: block;
+          margin-left: auto;
+          margin-right: auto; }
+      .seed .item-content .box h1 {
+        color: white;
+        text-align: center;
+        margin-bottom: 0;
+        font-size: 25px; }
+      .seed .item-content .box p {
+        color: white;
+        text-align: center;
+        margin-bottom: 10px;
+        color: rgba(255, 255, 255, 0.6); }
 
 ion-view.pane, ion-view.view {
   background-color: #2B718C; }
