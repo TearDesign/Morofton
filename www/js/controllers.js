@@ -9,33 +9,50 @@ angular.module('starter.controllers', [])
     $rootScope.currentUser = Parse.User.current();
     $rootScope.currentUser.fetch();
   }
+
+  //for displaying loading animation
   $scope.loading = false;
-  //a list of seeds that need to be uploaded
+
   var Seed = Parse.Object.extend('Seed');
-  var Record = Parse.Object.extend('Record');
+  // var Record = Parse.Object.extend('Record');
   var seedQuery = new Parse.Query(Seed);
   $scope.scrolling = false;
   // $scope.seeds = [];
+
+  //existing seeds saved in localstorage
   if(window.localStorage['seeds']){
     $scope.seeds = JSON.parse(window.localStorage['seeds']);
   } else {
     $scope.seeds = [];
   }
-  if(window.localStorage['records']){
-    var records = JSON.parse(window.localStorage['records']);
-  } else {
-    var records = [];
-  }
+  // if(window.localStorage['records']){
+  //   var records = JSON.parse(window.localStorage['records']);
+  // } else {
+  //   var records = [];
+  // }
+
+
+  //a list of seeds that need to be uploaded
   if(window.localStorage['newSeeds']){
     var newSeeds = JSON.parse(window.localStorage['newSeeds']);
   } else {
     var newSeeds = [];
   }
-  if(window.localStorage['newRecords']){
-    var newRecords = JSON.parse(window.localStorage['newRecords']);
-  } else {
-    var newRecords = [];
+
+  //updated seeds that need to be uploaded, only needed when user has synced before.
+  if($rootScope.currentUser){
+    if(window.localStorage['updatedSeeds']){
+      var updatedSeeds = JSON.parse(window.localStorage['updatedSeeds']);
+    } else {
+      var updatedSeeds = {};
+    }
   }
+  
+  // if(window.localStorage['newRecords']){
+  //   var newRecords = JSON.parse(window.localStorage['newRecords']);
+  // } else {
+  //   var newRecords = [];
+  // }
   // if(window.localStorage['newUpdates']){
   //   var newUpdates = JSON.parse(window.localStorage['newUpdates']);
   // } else {
@@ -158,10 +175,13 @@ angular.module('starter.controllers', [])
   function upload(){
     // console.log('upload');
     var uploaded_s = 0;
-    var uploaded_r = 0;
-    // var uploaded_u = 0;
-    if(newSeeds.length >= 1 || newRecords.length >= 1){
-      console.log(newSeeds.length + ' new seeds');
+    // var uploaded_r = 0;
+    var uploaded_u = 0;
+    // if(newSeeds.length >= 1 || newRecords.length >= 1){
+      //upload new seeds
+    // console.log('new: '+ newSeeds.length + ', updated: '+updatedSeeds);
+    if(newSeeds.length >= 1 || Object.keys(updatedSeeds).length >= 1){
+      console.log('new or updated seeds' + newSeeds.length + ',' + Object.keys(updatedSeeds).length);
       //upload the new seeds created
       for (var i in newSeeds){
         if(typeof newSeeds[i].createdAt == 'string'){
@@ -180,75 +200,114 @@ angular.module('starter.controllers', [])
         n_seed.save({
           success: function(result){
             uploaded_s++;
-            if (uploaded_s >= newSeeds.length){
+            console.log(uploaded_s + '/' + newSeeds.length + ',' +uploaded_u + '/' + Object.keys(updatedSeeds).length);
+            if (uploaded_s >= newSeeds.length && uploaded_u >= Object.keys(updatedSeeds).length){
               newSeeds = [];
+              updatedSeeds = {};
               localSave();
               download();
             }
           }
         });
       }
-      //upload new records and update seeds' lasts, need to go before seeds cus it uses legacy ids
-      for (var j in newRecords){
-        console.log(newRecords.length + ' new records');
-        if(typeof newRecords[j].date == 'string'){
-          var last = Date.parse(newRecords[j].date);
+      for(var k in updatedSeeds){
+        if(typeof updatedSeeds[k] == 'string'){
+          var last = new Date(Date.parse(updatedSeeds[k]));
+          // console.log(typeof last);
         } else {
-          var last = newRecords[j].date;
+          var last = updatedSeeds[k];
         }
-        var n_update = new Seed();
-        var n_record = new Record();
-        //upload new records
-        n_record.set('seed', newRecords[j].seed);
-        // n_record.set('date', last);
-        n_record.save({
+        var u_seed = new Seed();
+        u_seed.id = k;
+        u_seed.fetch({
           success: function(result){
-            uploaded_r++;
-            if (uploaded_r >= newRecords.length){
-              newRecords = [];
-              localSave();
-            }
-          },
-          error: function(result, error){
-            console.log(error.message);
-          }
-        })
-        //update last time of existing seeds if server side is newer, doesn't work if not uploaded seed
-        var idQuery = new Parse.Query('Seed');
-        var legacyQuery = new Parse.Query('Seed');
-        legacyQuery.equalTo('legacy_id', newRecords[j].seed);
-        idQuery.get(newRecords[j].seed, {
-          success: function(result){
-            console.log(result.get('last'));
-            n_update = result;
-            if(n_update.get('last') == undefined || n_update.get('last') < last){
-              n_update.set('last', last);
-              n_update.save({
-                success: function(success){
-                  download();
+            if(u_seed.get('last') == undefined || u_seed.get('last') < last){
+              u_seed.set('last', last);
+              console.log('updating last');
+              u_seed.save({
+                success: function(result){
+                  uploaded_u++;
+                  console.log(uploaded_s + '/' + newSeeds.length + ',' +uploaded_u + '/' + Object.keys(updatedSeeds).length);
+                  if (uploaded_s >= newSeeds.length && uploaded_u >= Object.keys(updatedSeeds).length){
+                    newSeeds = [];
+                    updatedSeeds = {};
+                    localSave();
+                    download();
+                  }
+                }, 
+                error: function(result, error){
+                  console.log(error.message);
                 }
-              }); 
+              });
             }
-          },
+          }, 
           error: function(result, error){
             console.log(error.message);
-            legacyQuery.find({
-              success: function(result){
-                n_update = result[0];
-              },
-              error: function(result, error){
-                console.log(error.message);
-              }
-            })
           }
         });
       }
+      //upload new records and update seeds' lasts, need to go before seeds cus it uses legacy ids
+      // for (var j in newRecords){
+      //   console.log(newRecords.length + ' new records');
+      //   if(typeof newRecords[j].date == 'string'){
+      //     var last = Date.parse(newRecords[j].date);
+      //   } else {
+      //     var last = newRecords[j].date;
+      //   }
+      //   var n_update = new Seed();
+      //   var n_record = new Record();
+      //   //upload new records
+      //   n_record.set('seed', newRecords[j].seed);
+      //   // n_record.set('date', last);
+      //   n_record.save({
+      //     success: function(result){
+      //       uploaded_r++;
+      //       if (uploaded_r >= newRecords.length){
+      //         newRecords = [];
+      //         localSave();
+      //       }
+      //     },
+      //     error: function(result, error){
+      //       console.log(error.message);
+      //     }
+      //   })
+      //   //update last time of existing seeds if server side is newer, doesn't work if not uploaded seed
+      //   var idQuery = new Parse.Query('Seed');
+      //   var legacyQuery = new Parse.Query('Seed');
+      //   legacyQuery.equalTo('legacy_id', newRecords[j].seed);
+      //   idQuery.get(newRecords[j].seed, {
+      //     success: function(result){
+      //       console.log(result.get('last'));
+      //       n_update = result;
+      //       if(n_update.get('last') == undefined || n_update.get('last') < last){
+      //         n_update.set('last', last);
+      //         n_update.save({
+      //           success: function(success){
+      //             download();
+      //           }
+      //         }); 
+      //       }
+      //     },
+      //     error: function(result, error){
+      //       console.log(error.message);
+      //       legacyQuery.find({
+      //         success: function(result){
+      //           n_update = result[0];
+      //         },
+      //         error: function(result, error){
+      //           console.log(error.message);
+      //         }
+      //       })
+      //     }
+      //   });
+      // }
     } else {
       download();
     }
   }
   //get seeds from Parse
   function download(){
+    console.log('downloading');
     // console.log('download');
     seedQuery.equalTo('user', $rootScope.currentUser);
     seedQuery.find({
@@ -275,11 +334,16 @@ angular.module('starter.controllers', [])
   }
 
 
+  //upload seeds and updates
   $scope.refresh = function(){
+    console.log('refreshing');
     if($rootScope.currentUser){
+      console.log('loggedin');
       $scope.loading = true;
       upload();
     } else {
+      console.log('not loggedin');
+      //the first auto sync fail doesn't popup login
       if(!first){
         $scope.login();
       }
@@ -298,7 +362,7 @@ angular.module('starter.controllers', [])
       $scope.now = new Date();
   }, 1000);
 
-
+//calculate the difference between now and then for date or strings of date
   $scope.difference = function(then){
     if(typeof then == 'string'){
       then = Date.parse(then);
@@ -346,17 +410,19 @@ angular.module('starter.controllers', [])
 
   function localSave(){
     window.localStorage['seeds'] = JSON.stringify($scope.seeds);
-    window.localStorage['records'] = JSON.stringify(records);
+    // window.localStorage['records'] = JSON.stringify(records);
     window.localStorage['newSeeds'] = JSON.stringify(newSeeds);
-    window.localStorage['newRecords'] = JSON.stringify(newRecords);
+    window.localStorage['updatedSeeds'] = JSON.stringify(updatedSeeds);
+    // window.localStorage['newRecords'] = JSON.stringify(newRecords);
   }
 
+//add a new seed with created at time, then save locally for the next sync
   $scope.addNew = function(){
     $scope.adding = true;
     // var seed = new Seed();
     var time = new Date();
-    $scope.seeds.unshift({'id': time.toString(), 'title': $rootScope.new, 'last': undefined, 'createdAt': time});
-    newSeeds.unshift({'id': time.toString(), 'title': $rootScope.new, 'last': undefined, 'createdAt': time});
+    $scope.seeds.unshift({'id': 'temp' + time.toString(), 'title': $rootScope.new, 'last': undefined, 'createdAt': time});
+    newSeeds.unshift({'id': 'temp' + time.toString(), 'title': $rootScope.new, 'last': undefined, 'createdAt': time});
     $scope.$apply();
     localSave();
     // seed.set('title', $rootScope.new);
@@ -387,12 +453,27 @@ angular.module('starter.controllers', [])
     // var record = new Record();
     // var seed = new Seed;
     // seed.id = formattedseed.id;
+    // seed.fetch({
+    //   success: function(result){
+    //     if(seed.get('last') == undefined || n_update.get('last') < now){
+    //       seed.set('last', now);
+    //       seed.save();
+    //     }
+    //   }
+    // });
     // record.set('seed', seed.id);
     // record.save();
     // seed.last = now;
     formattedseed.last = now;
-    newRecords.push({'seed': formattedseed.id, 'date': now});
-    records.push({'seed': formattedseed.id, 'date': now});
+    //add to updated list if the seed is already synced
+    // console.log(formattedseed.id.slice(0,4));
+    if(formattedseed.id.slice(0,4) != 'temp'){
+      updatedSeeds[formattedseed.id] = now;
+      // console.log(updatedSeeds);
+    }
+    
+    // newRecords.push({'seed': formattedseed.id, 'date': now});
+    // records.push({'seed': formattedseed.id, 'date': now});
     localSave();
     // newUpdates.push({'seed': seed.id, 'date': now});
     // $scope.$apply();
@@ -413,6 +494,7 @@ angular.module('starter.controllers', [])
   var jumping = false;
   $scope.scroll = function(anchor) 
   {
+    //do not show input bar when jumping by pressing index
     jumping = true;
     $timeout(function(){
       jumping = false;
