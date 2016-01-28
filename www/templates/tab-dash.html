@@ -31,7 +31,7 @@
           <p ng-if="seed.last"><strong><span class="statdot" ng-class="status(seed)"></span> {{difference(seed.last)}} ago</strong></p>
           <!-- <p ng-if="seed.last == undefined"> You haven't done it yet</p> -->
           <p ng-if="seed.last == undefined"><strong><span class="statdot" ng-class="status(seed)"></span> created {{difference(seed.createdAt)}} ago</strong></p>
-          <button ng-click="didIt(seed)" class="button button-balanced" ng-disabled="checkDisable(seed.last)">I did it!</button>
+          <button ng-click="didIt(seed)" class="button button-balanced" ng-disabled="checkDisable(seed.last)" ng-class="status(seed)">I did it!</button>
         </div>
       </div>
       <ion-option-button class="button-assertive padding"
