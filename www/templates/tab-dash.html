@@ -21,6 +21,11 @@
     <ion-item ng-repeat="seed in seeds track by $index" id="{{seed.id}}" class="seed">
       <div class="box padding">
         <div class="content">
+          <div class="pet">
+            <div class="center">
+              <h1>{{seed.count || 0}}</h1>
+            </div>
+          </div>
           <h1>{{seed.title}}</h1>
           <!-- <p ng-if="seed.last">last time: {{seed.last | date: 'dd MMM yyyy'}}</p> -->
           <p ng-if="seed.last"><strong><span class="statdot" ng-class="status(seed)"></span> {{difference(seed.last)}} ago</strong></p>

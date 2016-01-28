@@ -197,6 +197,7 @@ angular.module('starter.controllers', [])
         }
         n_seed.set('user', $rootScope.currentUser);
         n_seed.set('legacy_id', newSeeds[i].id);
+        n_seed.set('count', newSeeds[i].count);
         n_seed.save({
           success: function(result){
             uploaded_s++;
@@ -211,11 +212,11 @@ angular.module('starter.controllers', [])
         });
       }
       for(var k in updatedSeeds){
-        if(typeof updatedSeeds[k] == 'string'){
-          var last = new Date(Date.parse(updatedSeeds[k]));
+        if(typeof updatedSeeds[k][0] == 'string'){
+          var last = new Date(Date.parse(updatedSeeds[k][0]));
           // console.log(typeof last);
         } else {
-          var last = updatedSeeds[k];
+          var last = updatedSeeds[k][0];
         }
         var u_seed = new Seed();
         u_seed.id = k;
@@ -223,11 +224,13 @@ angular.module('starter.controllers', [])
           success: function(result){
             if(u_seed.get('last') == undefined || u_seed.get('last') < last){
               u_seed.set('last', last);
+              u_seed.set('count', updatedSeeds[k][1]);
               console.log('updating last');
               u_seed.save({
                 success: function(result){
                   uploaded_u++;
                   console.log(uploaded_s + '/' + newSeeds.length + ',' +uploaded_u + '/' + Object.keys(updatedSeeds).length);
+                  // if all the new seeds and updated seeds are uploaded, clear the local variables
                   if (uploaded_s >= newSeeds.length && uploaded_u >= Object.keys(updatedSeeds).length){
                     newSeeds = [];
                     updatedSeeds = {};
@@ -314,7 +317,7 @@ angular.module('starter.controllers', [])
       success: function(result){
         var tempseeds = [];
         for (var i in result){
-          tempseeds.push({'id': result[i].id, 'title': result[i].get('title'), 'last': result[i].get('last'), 'createdAt': result[i].get('createdTime')});
+          tempseeds.push({'id': result[i].id, 'title': result[i].get('title'), 'last': result[i].get('last'), 'createdAt': result[i].get('createdTime'), 'count': result[i].get('count') || 0});
         }
         window.localStorage['seeds'] = JSON.stringify(tempseeds);
         $scope.seeds = tempseeds;
@@ -421,8 +424,8 @@ angular.module('starter.controllers', [])
     $scope.adding = true;
     // var seed = new Seed();
     var time = new Date();
-    $scope.seeds.unshift({'id': 'temp' + time.toString(), 'title': $rootScope.new, 'last': undefined, 'createdAt': time});
-    newSeeds.unshift({'id': 'temp' + time.toString(), 'title': $rootScope.new, 'last': undefined, 'createdAt': time});
+    $scope.seeds.unshift({'id': 'temp' + time.toString(), 'title': $rootScope.new, 'last': undefined, 'createdAt': time, 'count': 0});
+    newSeeds.unshift({'id': 'temp' + time.toString(), 'title': $rootScope.new, 'last': undefined, 'createdAt': time, 'count': 0});
     $scope.$apply();
     localSave();
     // seed.set('title', $rootScope.new);
@@ -465,10 +468,11 @@ angular.module('starter.controllers', [])
     // record.save();
     // seed.last = now;
     formattedseed.last = now;
+    formattedseed.count = formattedseed.count + 1 || 1;
     //add to updated list if the seed is already synced
     // console.log(formattedseed.id.slice(0,4));
     if(formattedseed.id.slice(0,4) != 'temp'){
-      updatedSeeds[formattedseed.id] = now;
+      updatedSeeds[formattedseed.id] = [now, formattedseed.count];
       // console.log(updatedSeeds);
     }
     
