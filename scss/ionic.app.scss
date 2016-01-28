@@ -174,6 +174,7 @@ $new: rgba(211, 211, 211, 0.43);
 				&:after{
 					content: '';
 				    background: #5C83AB;
+				    box-shadow: 0 0 20px #5C83AB;
 				    /* border: 4px solid #9FBF60; */
 				    width: 100%;
 				    height: 30px;
